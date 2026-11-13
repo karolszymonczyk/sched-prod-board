@@ -24,7 +24,13 @@ for (const [tz, loc, want] of [['Pacific/Auckland', 'en-NZ', '12/11'], ['Europe/
   const t = await page.locator('[data-id="INC-1"] time').textContent();
   const dt = await page.locator('[data-id="INC-1"] time').getAttribute('datetime');
   ok(t.includes(want) && dt === base[0].openedAt, `${tz}: time "${t}" (datetime ${dt})`);
-  await page.locator('[data-id="INC-2"] [data-testid="ack"]').click();
+  ok(await page.locator('[data-testid="incident-row"] [data-testid="ack"]').count() === 0, `${tz}: no Ack in rows`);
+  await page.locator('[data-id="INC-2"]').click();
+  ok((await page.getByTestId('incident-panel').innerText()).includes('INC-2'), `${tz}: panel names INC-2`);
+  await page.locator('[data-id="INC-1"]').click();
+  ok((await page.getByTestId('incident-panel').innerText()).includes('INC-1'), `${tz}: panel switches to INC-1`);
+  await page.locator('[data-id="INC-2"]').click();
+  await page.getByTestId('panel-ack').click();
   await page.locator('[data-id="INC-2"] [data-testid="acked"]').waitFor();
   ok(acks.length === 1 && acks[0][0] === 'INC-2', `${tz}: ack sent for INC-2 with cursor ${acks[0]?.[1]}`);
   extra = true; const before = calls; await page.waitForTimeout(4500);
@@ -32,8 +38,13 @@ for (const [tz, loc, want] of [['Pacific/Auckland', 'en-NZ', '12/11'], ['Europe/
   const ids = await page.getByTestId('incident-row').evaluateAll((els) => els.map((e) => e.dataset.id));
   ok(ids.join() === 'INC-3,INC-1,INC-2', `${tz}: new incident on top without reload: ${ids}`);
   ok(await page.locator('[data-id="INC-2"] [data-testid="acked"]').count() === 1, `${tz}: acked mark survives refresh`);
+  ok((await page.getByTestId('incident-panel').innerText()).includes('INC-2 acked') && await page.getByTestId('panel-ack').count() === 0, `${tz}: panel shows INC-2 acked`);
   const sha = await page.getByTestId('build-sha').textContent(); const meta = await page.locator('meta[name=build]').getAttribute('content');
   ok(sha === meta && /^[0-9a-f]{40}$/.test(sha), `${tz}: build sha ${sha.slice(0, 7)} in meta + footer`);
   await ctx.close();
 }
+{ const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.route('**/incidents?*', (r) => r.fulfill({ json: { updatedAt: new Date().toISOString(), incidents: [], cursor: 'c' } }));
+  await page.goto(url); await page.getByTestId('empty').waitFor();
+  ok(await page.getByTestId('loader').count() === 0 && await page.getByTestId('empty').isVisible(), 'empty board: empty shown, loader gone'); await ctx.close(); }
 await browser.close();

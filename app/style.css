@@ -19,3 +19,20 @@ footer { color: #777; font-size: 13px; }
 .empty { color: #555; padding: 12px; }
 .status { color: #888; font-variant-numeric: tabular-nums; }
 footer code { font-family: ui-monospace, monospace; }
+.row { cursor: pointer; }
+.row:hover { background: #f4f6fb; }
+.row.open { background: #eaf0ff; box-shadow: inset 3px 0 0 #2f5bd3; }
+.row:focus-visible { outline: 2px solid #2f5bd3; outline-offset: -2px; }
+.panel { position: fixed; top: 84px; right: 16px; width: 240px; padding: 14px 16px; background: #fff; border: 1px solid #d5d9e2; border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.08); }
+.panel[hidden] { display: none; }
+.phead { display: flex; justify-content: space-between; align-items: center; color: #777; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.panel .close { border: 0; background: none; font-size: 20px; line-height: 1; cursor: pointer; color: #555; }
+.pid { margin: 4px 0 2px; font: 600 20px ui-monospace, monospace; }
+.panel p { margin: 4px 0; }
+.psev.sev1 { color: #b00020; font-weight: 600; } .psev.sev2 { color: #a15c00; }
+.pmeta { color: #555; font-size: 13px; }
+.pfoot { margin-top: 12px; }
+.primary { font: inherit; width: 100%; padding: 8px 12px; border: 0; border-radius: 6px; background: #2f5bd3; color: #fff; cursor: pointer; }
+.primary:disabled { opacity: .6; cursor: progress; }
+@media (max-width: 1260px) { main { padding-right: 280px; } }
+@media (max-width: 720px) { main { padding-right: 24px; padding-bottom: 220px; } .panel { top: auto; bottom: 12px; left: 12px; right: 12px; width: auto; } }
